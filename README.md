@@ -44,7 +44,7 @@ This is an api for a Blog app
 
 ## Base URL
 
-- somehostsite.com
+- https://blog-api-app76.herokuapp.com/
 
 ## Models
 

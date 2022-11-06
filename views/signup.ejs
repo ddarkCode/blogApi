@@ -1,0 +1,28 @@
+<%- include('partials/header') %>
+<div class="main">
+<h3>Register to start posting blogs</h3>
+    <form action="/api/auth/signup" method="post">
+    
+    
+    <div>
+        <label for="email">email</label>
+        <input id="email" type="email" placeholder="Enter your email address" name="email" />
+    </div>
+    <div>
+        <label for="password">Password</label>
+        <input id="password" type="password" placeholder="Enter your password" name="password" />
+    </div>
+     <div>
+        <label for="last_name">Last Name</label>
+        <input id="last_name" placeholder="Enter Your Last Name" name="last_name" />
+    </div>
+    <div>
+        <label for="first_name">Password</label>
+        <input id="first_name" placeholder="Enter Your First Name" name="first_name" />
+    </div>
+
+    <button type="submit">Register</button>
+    </form>
+    </div>
+
+<%- include('partials/footer') %>

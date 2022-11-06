@@ -22,7 +22,7 @@ module.exports = (function controllers() {
         return res.status(500).json(err);
       }
 
-      req.login(user, { session: false }, async (err) => {
+      req.login(user, { session: true }, async (err) => {
         if (err) {
           log(err);
           return res.status(500).json(err);
@@ -37,6 +37,7 @@ module.exports = (function controllers() {
         const token = sign(userinfo, process.env.JWT_SECRET, {
           expiresIn: '1h',
         });
+
         return res
           .status(200)
           .json({ loggedIn: true, profile: userinfo, token });

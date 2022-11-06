@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "set DEBUG=app, app:* && nodemon app.js",
     "start": "node app.js",
-    "test": "jest --watchAll"
+    "test": "jest --verbose --runInBand --forceExit"
   },
   "keywords": [],
   "author": "",
@@ -28,5 +28,8 @@
   "devDependencies": {
     "jest": "^29.0.2",
     "supertest": "^6.2.4"
+  },
+  "engines": {
+    "node": "v16.16.0"
   }
 }

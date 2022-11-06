@@ -1,26 +1,29 @@
 const request = require('supertest');
+const mongoose = require('mongoose');
 
 const app = require('../app');
 
 //Blogs Routes test
 
 describe('Blogs CRUD operations', () => {
-  it('Return a list of blogs in draft.', async () => {
+  afterAll(() => {
+    mongoose.connection.close(true);
+  });
+
+  test('Return a list of published blogs', async () => {
     const res = await request(app).get('/api/blogs');
     expect(res.statusCode).toBe(200);
     expect(Array.isArray(res.body)).toEqual(true);
-  });
+  }, 1000000);
 
-  it('Adds a new Blog in draft state to the database.', async () => {
+  test('Adds a new Blog in draft state to the database.', async () => {
     const res = await request(app)
       .post(
-        '/api/blogs/?blog_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzY2YTk5YTEwODNhOTQ3OTk1YzU1YmQiLCJlbWFpbCI6InVnb0BnbWFpbC5jb20iLCJsYXN0X25hbWUiOiJ1Z28iLCJmaXJzdF9uYW1lIjoidWdvIiwiaWF0IjoxNjY3NjcyNDc1LCJleHAiOjE2Njc2NzYwNzV9.q5X2-PFOwykOQ8ic4tZL53UE2H0K1arb_hcxRXPTvoM'
+        '/api/blogs/?blog_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzY2YTk5YTEwODNhOTQ3OTk1YzU1YmQiLCJlbWFpbCI6InVnb0BnbWFpbC5jb20iLCJsYXN0X25hbWUiOiJ1Z28iLCJmaXJzdF9uYW1lIjoidWdvIiwiaWF0IjoxNjY3NzI2Mzk0LCJleHAiOjE2Njc3Mjk5OTR9.f0Em_ABqOyNx2sNB9Ai293pffPh0AQ8oyx65TqzzE9Y'
       )
       .send({
-        title: 'jwt.verify(token1)',
+        title: 'asynchronously(token1222)',
         description: ' A sample blog',
-        authorId: '6366a99a1083a947995c55bd',
-        state: 'draft',
         tags: 'javascript, programming',
         body: '(Asynchronous) If a callback is supplied, function acts asynchronously. The callback is called with the decoded payload if the signature is valid and optional expiration, audience, or issuer are valid. If not, it will be called with the error.',
       });
@@ -37,10 +40,10 @@ describe('Blogs CRUD operations', () => {
     expect(res.body).toHaveProperty('_id');
     expect(res.body).toHaveProperty('createdAt');
     expect(res.body).toHaveProperty('updatedAt');
-  });
+  }, 1000000);
 
-  it('Gets a blog.', async () => {
-    const res = await request(app).patch('/api/blogs/6366ac332fb7debe9b1d2ca2');
+  test('Gets a blog.', async () => {
+    const res = await request(app).get('/api/blogs/63677ecfc71ba6d363511db9');
 
     expect(res.body).toHaveProperty('title');
     expect(res.body).toHaveProperty('description');
@@ -55,38 +58,41 @@ describe('Blogs CRUD operations', () => {
     expect(res.body).toHaveProperty('createdAt');
     expect(res.body).toHaveProperty('updatedAt');
     expect(res.body).toHaveProperty('infos');
-  });
+  }, 1000000);
 
-  it('Updates a blog.', async () => {
+  test('Updates a blog.', async () => {
     const res = await request(app)
       .patch(
-        '/api/blogs/6366ac332fb7debe9b1d2ca2/?blog_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzY2YTk5YTEwODNhOTQ3OTk1YzU1YmQiLCJlbWFpbCI6InVnb0BnbWFpbC5jb20iLCJsYXN0X25hbWUiOiJ1Z28iLCJmaXJzdF9uYW1lIjoidWdvIiwiaWF0IjoxNjY3NjczMzYxLCJleHAiOjE2Njc2NzY5NjF9.EQkGmPKzP8ZKaVCB-xak8RMCZf88TK8LpSxqu9nSb74'
+        '/api/blogs/63677ea567710329ca55c258/?blog_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzY2YTk5YTEwODNhOTQ3OTk1YzU1YmQiLCJlbWFpbCI6InVnb0BnbWFpbC5jb20iLCJsYXN0X25hbWUiOiJ1Z28iLCJmaXJzdF9uYW1lIjoidWdvIiwiaWF0IjoxNjY3NzI2Mzk0LCJleHAiOjE2Njc3Mjk5OTR9.f0Em_ABqOyNx2sNB9Ai293pffPh0AQ8oyx65TqzzE9Y'
       )
       .send({ state: 'published' });
     expect(res.statusCode).toBe(200);
     expect(res.body).toHaveProperty('updateInfo');
     expect(res.body).toHaveProperty('message');
-  });
+  }, 1000000);
 
-  it('Delets a blog.', async () => {
+  test('Delets a blog.', async () => {
     const res = await request(app).delete(
-      '/api/blogs/6366ac332fb7debe9b1d2ca2/?blog_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzY2YTk5YTEwODNhOTQ3OTk1YzU1YmQiLCJlbWFpbCI6InVnb0BnbWFpbC5jb20iLCJsYXN0X25hbWUiOiJ1Z28iLCJmaXJzdF9uYW1lIjoidWdvIiwiaWF0IjoxNjY3NjczMzYxLCJleHAiOjE2Njc2NzY5NjF9.EQkGmPKzP8ZKaVCB-xak8RMCZf88TK8LpSxqu9nSb74'
+      '/api/blogs/6367839b58757b1265561084/?blog_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzY2YTk5YTEwODNhOTQ3OTk1YzU1YmQiLCJlbWFpbCI6InVnb0BnbWFpbC5jb20iLCJsYXN0X25hbWUiOiJ1Z28iLCJmaXJzdF9uYW1lIjoidWdvIiwiaWF0IjoxNjY3NzI2Mzk0LCJleHAiOjE2Njc3Mjk5OTR9.f0Em_ABqOyNx2sNB9Ai293pffPh0AQ8oyx65TqzzE9Y'
     );
     expect(res.statusCode).toBe(200);
     expect(res.body).toHaveProperty('deleteInfo');
     expect(res.body).toHaveProperty('message');
-  });
+  }, 1000000);
 });
 
 //Auth tests
 
 describe('Sign up and login a user:', () => {
-  it('It should sign up user.', async () => {
+  afterAll(() => {
+    mongoose.connection.close(true);
+  });
+  test('It should sign up user.', async () => {
     const res = await request(app).post('/api/auth/signup').send({
-      email: 'jay3@gmail.com',
-      last_name: 'jay',
-      first_name: 'jay',
-      password: 'jay',
+      email: 'xxax@gmail.com',
+      last_name: 'xxax',
+      first_name: 'xxax',
+      password: 'xxax',
     });
     console.log(res.statusCode);
     console.log(res.body);
@@ -94,12 +100,12 @@ describe('Sign up and login a user:', () => {
     expect(res.body).toHaveProperty('loggedIn');
     expect(res.body).toHaveProperty('profile');
     expect(res.body).toHaveProperty('token');
-  });
+  }, 1000000);
 
-  it('It should login a user.', async () => {
+  test('It should login a user.', async () => {
     const res = await request(app).post('/api/auth/login').send({
-      email: 'jay1@gmail.com',
-      password: 'jay',
+      email: 'ugo@gmail.com',
+      password: 'ugo',
     });
     console.log(res.statusCode);
     console.log(res.body);
@@ -107,23 +113,23 @@ describe('Sign up and login a user:', () => {
     expect(res.body).toHaveProperty('loggedIn');
     expect(res.body).toHaveProperty('profile');
     expect(res.body).toHaveProperty('token');
-  });
+  }, 1000000);
 });
 
-//Author routes tests
+// // //Author routes tests
 
 describe('Author CRUD operations', () => {
-  it('Returns a list of blogs in draft and puplished state.', async () => {
+  test('Returns a list of blogs in draft and puplished state.', async () => {
     const res = await request(app).get(
-      '/api/authors/6366a99a1083a947995c55bd/blogs'
+      '/api/authors/6366a99a1083a947995c55bd/blogs/?blog_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzY2YTk5YTEwODNhOTQ3OTk1YzU1YmQiLCJlbWFpbCI6InVnb0BnbWFpbC5jb20iLCJsYXN0X25hbWUiOiJ1Z28iLCJmaXJzdF9uYW1lIjoidWdvIiwiaWF0IjoxNjY3NzI2Mzk0LCJleHAiOjE2Njc3Mjk5OTR9.f0Em_ABqOyNx2sNB9Ai293pffPh0AQ8oyx65TqzzE9Y'
     );
     expect(res.statusCode).toBe(200);
     expect(res.body).toHaveProperty('blogLists');
-  });
+  }, 1000000);
 
-  it('Returns a list of blogs in draft and puplished state.', async () => {
+  test('Returns a list of blogs in draft and puplished state.', async () => {
     const res = await request(app).get(
-      '/api/authors/6366a99a1083a947995c55bd/blogs/blogId'
+      '/api/authors/6366a99a1083a947995c55bd/blogs/63677ecfc71ba6d363511db9/?blog_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzY2YTk5YTEwODNhOTQ3OTk1YzU1YmQiLCJlbWFpbCI6InVnb0BnbWFpbC5jb20iLCJsYXN0X25hbWUiOiJ1Z28iLCJmaXJzdF9uYW1lIjoidWdvIiwiaWF0IjoxNjY3NzI2Mzk0LCJleHAiOjE2Njc3Mjk5OTR9.f0Em_ABqOyNx2sNB9Ai293pffPh0AQ8oyx65TqzzE9Y'
     );
     expect(res.statusCode).toBe(200);
     expect(res.body).toHaveProperty('title');
@@ -136,5 +142,5 @@ describe('Author CRUD operations', () => {
     expect(res.body).toHaveProperty('reading_time');
     expect(res.body).toHaveProperty('body');
     expect(res.body).toHaveProperty('_id');
-  });
+  }, 1000000);
 });

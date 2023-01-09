@@ -16,7 +16,7 @@ function Blogs() {
     <div id="blogs-main">
       <h2>All Published Blogs</h2>
       <ul>
-        {blogs.map((blog) => (
+        {blogs.reverse().map((blog) => (
           <li key={blog._id}>
             <h4>{blog.title}</h4>
             <div className="meta-details">

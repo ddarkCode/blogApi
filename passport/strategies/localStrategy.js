@@ -1,10 +1,11 @@
-const passport = require('passport');
-const { Strategy } = require('passport-local');
-const log = require('debug')('app:localStrategy');
+import passport from 'passport';
+import { Strategy } from 'passport-local';
 
-const User = require('../../models/User');
+import User from '../../models/User';
 
-const localStrategy = () => {
+import logger from '../../logger/logger';
+
+export const localStrategy = () => {
   passport.use(
     'login',
     new Strategy(
@@ -48,12 +49,10 @@ const localStrategy = () => {
           });
           done(null, user);
         } catch (err) {
-          log(err);
+          logger.info(err);
           done(err);
         }
       }
     )
   );
 };
-
-module.exports = localStrategy;

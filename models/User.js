@@ -31,4 +31,4 @@ userSchema.methods.verifyPassword = async function (password) {
   return await compare(password, this.password);
 };
 
-module.exports = model('User', userSchema);
+export default model('User', userSchema);

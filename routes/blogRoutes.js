@@ -1,21 +1,28 @@
-const { Router } = require('express');
-const passport = require('passport');
+import { Router } from 'express';
+import passport from 'passport';
+
+import { blogController } from '../controllers/blogController';
+import { blogValidator } from '../validators/blogValidator';
 
 const {
   getAllPublishedBlogs,
-  postNewBlog,
+  postBlog,
   getSingleBlog,
   updateBlog,
   deleteBlog,
-} = require('../controllers/blogController');
+} = blogController;
 
-const blogRoutes = () => {
+export const blogRoutes = () => {
   const blogRouter = Router();
 
   blogRouter
     .route('/')
     .get(getAllPublishedBlogs)
-    .post(passport.authenticate('jwt', { session: false }), postNewBlog);
+    .post(
+      blogValidator,
+      passport.authenticate('jwt', { session: false }),
+      postBlog
+    );
   blogRouter
     .route('/:blogId')
     .get(getSingleBlog)
@@ -24,5 +31,3 @@ const blogRoutes = () => {
 
   return blogRouter;
 };
-
-module.exports = blogRoutes;

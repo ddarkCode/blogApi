@@ -1,6 +1,9 @@
-const config = {
+import { config } from 'dotenv';
+config();
+
+const envConfig = {
   port: process.env.PORT || 3000,
-  mongoUrl: process.env.MONGO_URL,
+  mongoUrl: process.env.MONGO_URL || 'mongodb://localhost:27017/blogApi',
 };
 
-module.exports = config;
+export default envConfig;

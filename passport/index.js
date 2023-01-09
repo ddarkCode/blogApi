@@ -1,9 +1,9 @@
-const passport = require('passport');
+import passport from 'passport';
 
-const localStrategy = require('./strategies/localStrategy');
-const jwtStrategy = require('./strategies/jwtStrategy');
+import { localStrategy } from './strategies/localStrategy';
+import { jwtStrategy } from './strategies/jwtStrategy';
 
-const passportConfig = (app) => {
+export const passportConfig = (app) => {
   app.use(passport.initialize());
   app.use(passport.session());
 
@@ -22,5 +22,3 @@ const passportConfig = (app) => {
     });
   });
 };
-
-module.exports = passportConfig;

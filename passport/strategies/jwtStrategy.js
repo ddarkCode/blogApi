@@ -1,8 +1,9 @@
-const { Strategy, ExtractJwt } = require('passport-jwt');
-const passport = require('passport');
-const log = require('debug')('app:jwtStrategy');
+import { Strategy, ExtractJwt } from 'passport-jwt';
+import passport from 'passport';
 
-const jwtStrategy = () => {
+import logger from '../../logger/logger';
+
+export const jwtStrategy = () => {
   const options = {
     secretOrKey: process.env.JWT_SECRET,
     jwtFromRequest: ExtractJwt.fromUrlQueryParameter('blog_token'),
@@ -10,14 +11,12 @@ const jwtStrategy = () => {
   passport.use(
     new Strategy(options, (token, done) => {
       try {
-        log('JWT STRATEGY: ', token);
+        logger.info('JWT STRATEGY: ', token);
         return done(null, token);
       } catch (err) {
-        log('JWT Error: => ', err);
+        logger.info('JWT Error: => ', err);
         return done(err);
       }
     })
   );
 };
-
-module.exports = jwtStrategy;

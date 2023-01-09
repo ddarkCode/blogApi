@@ -1,64 +1,34 @@
-const log = require('debug')('app:authorController');
+import paginate from 'paginate-middleware';
 
-const Blog = require('../models/Blog');
+import logger from '../logger/logger';
+import Blog from '../models/Blog';
 
-module.exports = (function controller() {
+export const authorController = (function controller() {
   return {
     getAuthorBlogs: async (req, res) => {
       try {
-        if (req.isAuthenticated()) {
-          if (req.user._id === req.params.authorId) {
-            let { page = 1, limit = 4 } = req.query;
+        if (req.user._id === req.params.authorId) {
+          let { page = 1, limit = 10 } = req.query;
 
-            if (typeof page === 'string') {
-              page = +page;
-              limit = +limit;
-            }
+          const queryBy = {
+            authorId: req.user._id,
+          };
 
-            const startIndex = (page - 1) * limit;
-            const endIndex = limit * page;
-
-            const blogsObj = {};
-
-            if (endIndex < (await Blog.countDocuments().exec())) {
-              blogsObj.next = {
-                page: page + 1,
-                limit,
-              };
-            }
-
-            if (startIndex > 0) {
-              blogsObj.previous = {
-                page: page - 1,
-                limit,
-              };
-            }
-
-            const queryBy = {
-              authorId: req.user._id,
-            };
-
-            if (req.query.state) {
-              queryBy.state = req.query.state;
-            }
-            blogsObj.blogLists = await Blog.find(queryBy)
-              .limit(endIndex)
-              .skip(startIndex);
-
-            return res.status(200).json(blogsObj);
-          } else {
-            return res.status(403).json({
-              message:
-                'Can only view your own list of published and draft blogs',
-            });
+          if (req.query.state) {
+            queryBy.state = req.query.state;
           }
+          const blogs = await Blog.find(queryBy);
+
+          const result = paginate(blogs, +page, +limit);
+
+          return res.status(200).json(result);
         } else {
-          return res.status(401).json({
-            message: 'You must be authenticated to perform this operation.',
+          return res.status(403).json({
+            message: 'Can only view your own list of published and draft blogs',
           });
         }
       } catch (err) {
-        log(err);
+        logger.info(err);
         return res.status(500).json(err);
       }
     },
@@ -73,6 +43,7 @@ module.exports = (function controller() {
           return res.status(200).json(blog);
         }
       } catch (err) {
+        logger.info(err);
         return res.status(500).json(err);
       }
     },

@@ -1,26 +1,34 @@
-require('dotenv').config();
-const express = require('express');
-const morgan = require('morgan');
-const session = require('express-session');
-const passport = require('passport');
-const log = require('debug')('app');
-const ejs = require('ejs');
-const { sign } = require('jsonwebtoken');
+import { config } from 'dotenv';
+config();
 
-const config = require('./config');
-const database = require('./database');
-const passportConfig = require('./passport');
+import express from 'express';
+import session from 'express-session';
+import rateLimit from 'express-rate-limit';
+import React from 'react';
+import { matchRoutes } from 'react-router-config';
+
+import envConfig from './config';
+import database from './database';
+import { passportConfig } from './passport';
+import httpLogger from './logger/httpLogger';
+import logger from './logger/logger';
+import { renderer } from './helpers/renderer';
+
+import { authRoutes } from './routes/authRoutes';
+import { blogRoutes } from './routes/blogRoutes';
+import { authorRoutes } from './routes/authorRoutes';
+import { serverCreateStoreKit } from './helpers/createStore';
+import { Routes } from './views/Routes';
 
 const app = express();
 
-database(config.mongoUrl);
+database(envConfig.mongoUrl);
 
-app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static('public'));
-app.use(morgan('dev'));
 
+app.use(httpLogger);
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
@@ -34,40 +42,52 @@ app.use(
 
 passportConfig(app);
 
-const authRoutes = require('./routes/authRoutes');
-const blogRoutes = require('./routes/blogRoutes');
-const authorRoutes = require('./routes/authorRoutes');
-
-app.get('/', (req, res) => {
-  return res.status(200).render('home', { user: req.user ? req.user : null });
+const limiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: 'Too many requests, please try again later.',
+  statusCode: 429,
 });
 
-app.get('/api/new-blog', (req, res) => {
-  if (!req.isAuthenticated()) {
-    return res.redirect('/api/auth/login');
-  } else {
-    const userinfo = {
-      _id: req.user._id,
-      email: req.user.email,
-      last_name: req.user.last_name,
-      first_name: req.user.first_name,
-    };
-
-    const token = sign(userinfo, process.env.JWT_SECRET, {
-      expiresIn: '1h',
-    });
-    return res
-      .status(200)
-      .render('newBlog', { token, user: req.user ? req.user : null });
-  }
-});
-
+app.use('/api', limiter);
 app.use('/api/auth', authRoutes());
 app.use('/api/blogs', blogRoutes());
 app.use('/api/authors', authorRoutes());
 
-module.exports = app.listen(config.port, () =>
-  log('Server is Running on port ' + config.port)
-);
+app.get('*', (req, res) => {
+  const store = serverCreateStoreKit();
 
-// module.exports = app;
+  const promises = matchRoutes(Routes, req.path)
+    .map(({ route }) => {
+      return route.loadData
+        ? route.loadData(store, req.path.split('/')[3])
+        : null;
+    })
+    .map((promise) => {
+      if (promise) {
+        return new Promise((resolve, reject) => {
+          promise.then(resolve).catch(resolve);
+        });
+      }
+    });
+
+  Promise.all(promises).then(() => {
+    const context = {};
+    logger.info('Server Root App Store Get State: ', store.getState());
+    const content = renderer(req, store, context);
+
+    if (context.url) {
+      return res.redirect(301, context.url);
+    }
+    if (context.notFound) {
+      res.status(404);
+    }
+    return res.send(content);
+  });
+});
+
+export default app.listen(envConfig.port, () =>
+  logger.info('Server is Running on port ' + envConfig.port)
+);

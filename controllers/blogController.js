@@ -1,45 +1,23 @@
-const log = require('debug')('app:blogController');
+import paginate from 'paginate-middleware';
 
-const Blog = require('../models/Blog');
-const User = require('../models/User');
+import Blog from '../models/Blog';
+import User from '../models/User';
 
-module.exports = (function () {
+import logger from '../logger/logger';
+
+export const blogController = (function () {
   return {
     getAllPublishedBlogs: async (req, res) => {
       try {
         let {
           page = 1,
-          limit = 20,
+          limit = 10,
           author,
           title,
           tags,
           order_by = 'created_at',
           order = 'asc',
         } = req.query;
-
-        if (typeof page === 'string') {
-          page = +page;
-          limit = +limit;
-        }
-
-        const startIndex = (page - 1) * limit;
-        const endIndex = limit * page;
-
-        const blogsObj = {};
-
-        if (endIndex < (await Blog.countDocuments().exec())) {
-          blogsObj.next = {
-            page: page + 1,
-            limit,
-          };
-        }
-
-        if (startIndex > 0) {
-          blogsObj.previous = {
-            page: page - 1,
-            limit,
-          };
-        }
 
         const queryBy = { state: 'published' };
 
@@ -65,37 +43,36 @@ module.exports = (function () {
             sortQuery[sortAttribute] = -1;
           }
         }
-        const blogs = await Blog.find(queryBy)
-          .sort(sortQuery)
-          .limit(endIndex)
-          .skip(startIndex);
+        const blogs = await Blog.find(queryBy).sort(sortQuery);
+        const result = paginate(blogs, +page, +limit);
 
-        return res.status(200).json(blogs);
+        return res.status(200).json(result);
       } catch (err) {
-        log(err);
+        logger.info(err);
         return res.status(500).json(err);
       }
     },
-    postNewBlog: async (req, res) => {
+    postBlog: async (req, res) => {
       try {
-        if (req.isAuthenticated()) {
-          const { title, description, tags, body } = req.body;
-          const newBlog = await Blog.create({
-            title,
-            description,
-            author: req.user.last_name + ' ' + req.user.first_name,
-            authorId: req.user._id,
-            reading_time: Math.ceil(body.length / 265),
-            tags,
-            body,
-          });
-          return res.status(201).json(newBlog);
-        }
-        return res.status(401).json({
-          message: 'You must be logged in to perform this operation.',
+        const { title, description, tags, body } = req.body;
+        const newBlog = await Blog.create({
+          title,
+          description,
+          author:
+            req.body.author || req.user.first_name + ' ' + req.user.last_name,
+          authorId: req.user._id,
+          reading_time: `
+            ${
+              Math.ceil(body.length / 265) > 1
+                ? Math.ceil(body.length / 265) + 'Mins'
+                : Math.ceil(body.length / 265) + 'Min'
+            }`,
+          tags,
+          body,
         });
+        return res.status(201).json(newBlog);
       } catch (err) {
-        log(err);
+        logger.info(err);
         return res.status(500).json(err);
       }
     },
@@ -121,57 +98,45 @@ module.exports = (function () {
 
         return res.status(200).json(blogWithAuthorInfo);
       } catch (err) {
-        log(err);
+        logger.info(err);
         return res.status(500).json(err);
       }
     },
     updateBlog: async (req, res) => {
       try {
-        if (req.isAuthenticated()) {
-          const { blogId } = req.params;
-          const blog = await Blog.findById(blogId);
-          if (blog.authorId === req.user._id) {
-            const updateInfo = await Blog.updateOne({ _id: blogId }, req.body);
-            return res
-              .status(200)
-              .json({ updateInfo, message: 'Blog updated successfully.' });
-          } else {
-            return res
-              .status(403)
-              .json({ message: 'You can only update your blog.' });
-          }
+        const { blogId } = req.params;
+        const blog = await Blog.findById(blogId);
+        if (blog.authorId === req.user._id) {
+          const updateInfo = await Blog.updateOne({ _id: blogId }, req.body);
+          return res
+            .status(200)
+            .json({ updateInfo, message: 'Blog updated successfully.' });
         } else {
-          return res.status(401).json({
-            message: 'You must be logged in to perform this operation.',
-          });
+          return res
+            .status(403)
+            .json({ message: 'You can only update your blog.' });
         }
       } catch (err) {
-        log(err);
+        logger.info(err);
         return res.status(500).json(err);
       }
     },
     deleteBlog: async (req, res) => {
       try {
-        if (req.isAuthenticated()) {
-          const { blogId } = req.params;
-          const blog = await Blog.findById(blogId);
-          if (blog.authorId === req.user._id) {
-            const deleteInfo = await Blog.deleteOne({ _id: blogId });
-            return res
-              .status(200)
-              .json({ deleteInfo, message: 'Blog Deleted successfully.' });
-          } else {
-            return res
-              .status(403)
-              .json({ message: 'You can only delete your blog.' });
-          }
+        const { blogId } = req.params;
+        const blog = await Blog.findById(blogId);
+        if (blog.authorId === req.user._id) {
+          const deleteInfo = await Blog.deleteOne({ _id: blogId });
+          return res
+            .status(200)
+            .json({ deleteInfo, message: 'Blog Deleted successfully.' });
         } else {
-          return res.status(401).json({
-            message: 'You must be logged in to perform this operation',
-          });
+          return res
+            .status(403)
+            .json({ message: 'You can only delete your blog.' });
         }
       } catch (err) {
-        log(err);
+        logger.info(err);
         return res.status(500).json(err);
       }
     },

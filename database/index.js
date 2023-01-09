@@ -1,12 +1,15 @@
-const mongoose = require('mongoose');
-const log = require('debug')('app:database');
+import mongoose from 'mongoose';
 
-module.exports = (mongooseUrl) => {
+import logger from '../logger/logger';
+
+export default async (mongooseUrl) => {
   try {
-    mongoose.connect(mongooseUrl, () => {
-      log('Database connected successfully');
-    });
+    const connectionString = await mongoose.connect(
+      mongooseUrl || 'mongodb://localhost:27017'
+    );
+
+    logger.info('  Database connection was successfully established');
   } catch (err) {
-    log(err);
+    logger.error(err);
   }
 };

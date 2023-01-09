@@ -1,7 +1,8 @@
-const { sign } = require('jsonwebtoken');
-const log = require('debug')('app:authController');
+import { sign } from 'jsonwebtoken';
 
-module.exports = (function controllers() {
+import logger from '../logger/logger';
+
+export const authController = (function controllers() {
   return {
     signup: (req, res) => {
       const userinfo = {
@@ -18,7 +19,7 @@ module.exports = (function controllers() {
     },
     login: (req, res, { err, user, info }) => {
       if (err) {
-        log(err);
+        logger.info(err);
         return res.status(500).json(err);
       }
 

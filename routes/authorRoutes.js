@@ -1,12 +1,12 @@
-const { Router } = require('express');
-const passport = require('passport');
+import { Router } from 'express';
+import passport from 'passport';
+// import User from '../models/User';
 
-const {
-  getAuthorBlogs,
-  getAuthorBlog,
-} = require('../controllers/authorController');
+import { authorController } from '../controllers/authorController';
 
-const authorRoutes = () => {
+const { getAuthorBlogs, getAuthorBlog } = authorController;
+
+export const authorRoutes = () => {
   const authorRouter = Router();
 
   authorRouter
@@ -18,5 +18,3 @@ const authorRoutes = () => {
     .get(passport.authenticate('jwt', { session: false }), getAuthorBlog);
   return authorRouter;
 };
-
-module.exports = authorRoutes;

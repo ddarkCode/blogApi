@@ -89,11 +89,10 @@ function Signup() {
   );
 }
 
-function loadData() {
-  console.log('Hello From The Signup Page.');
-}
+// function loadData() {
+//   console.log('Hello From The Signup Page.');
+// }
 
 export default {
   component: Signup,
-  loadData,
 };

@@ -8,14 +8,16 @@ import serialize from 'serialize-javascript';
 import { Routes } from '../views/Routes';
 import logger from '../logger/logger';
 
-export const renderer = (req, store, context) => {
+export default (req, store, context) => {
   const content = renderToString(
     <Provider store={store}>
       <StaticRouter location={req.url} context={context}>
-        <div>{renderRoutes(Routes)}</div>
+        <div>{renderRoutes(Routes)}</div> 
       </StaticRouter>
     </Provider>
   );
+  logger.info('Store before rendering: ', store.getState());
+
   return `
   <!DOCTYPE html>
 <html lang="en">
@@ -29,11 +31,10 @@ export const renderer = (req, store, context) => {
   <body>
     <div id="root">${content}</div>
 
-
-    
     <script>
-   window.INITIAL_STATE = ${serialize(store.getState())}
-</script>
+       window.INITIAL_STATE = ${serialize(store.getState())}
+    </script>
+
     <script src="/viewsBundle.js"></script>
   </body>
 </html>

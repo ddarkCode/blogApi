@@ -28,7 +28,7 @@ const storage =
     ? createWebStorage('local')
     : createNoopStorage();
 
-export const reducers = combineReducers({
+const reducers = combineReducers({
   blogs,
   blog,
   user,
@@ -43,3 +43,5 @@ export const persistedReducer = persistReducer(persistConfig, reducers);
 
 export const viewsCreateStoreKit = (INITIAL_STATE) =>
   createStore(persistedReducer, INITIAL_STATE, applyMiddleware(...middlewares));
+
+export default reducers;

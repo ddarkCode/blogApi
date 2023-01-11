@@ -13,7 +13,7 @@ import database from './database';
 import { passportConfig } from './passport';
 import httpLogger from './logger/httpLogger';
 import logger from './logger/logger';
-import { renderer } from './helpers/renderer';
+import  renderer  from './helpers/renderer';
 
 import { authRoutes } from './routes/authRoutes';
 import { blogRoutes } from './routes/blogRoutes';

@@ -30,7 +30,7 @@ function Blog() {
 
 function loadData(store, blogId) {
   //   console.log('Blog Component Id: ', blogId);
-  store.dispatch(getSingleBlog(blogId));
+  return store.dispatch(getSingleBlog(blogId));
 }
 
 export default {

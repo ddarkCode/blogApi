@@ -16,7 +16,7 @@ function Blogs() {
     <div id="blogs-main">
       <h2>All Published Blogs</h2>
       <ul>
-        {blogs.reverse().map((blog) => (
+        {blogs.map((blog) => (
           <li key={blog._id}>
             <h4>{blog.title}</h4>
             <div className="meta-details">
@@ -34,7 +34,7 @@ function Blogs() {
 }
 
 function loadData(store) {
-  store.dispatch(getAllBlogs());
+  return store.dispatch(getAllBlogs());
 }
 
 export default {

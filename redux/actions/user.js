@@ -35,7 +35,6 @@ export const loginUser = (userData) => {
         `https://blog-api-project-v2.onrender.com/api/auth/login`,
         userData
       );
-      console.log('Login User Action: ', data);
       dispatch(loginUserActionCreator(data));
     } catch (err) {
       console.log(err);

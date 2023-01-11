@@ -63,11 +63,10 @@ function Login() {
   );
 }
 
-function loadData() {
-  console.log('Hello From The Login Page');
-}
+// function loadData() {
+//   console.log('Hello From The Login Page');
+// }
 
 export default {
   component: Login,
-  loadData,
 };

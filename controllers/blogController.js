@@ -45,6 +45,8 @@ export const blogController = (function () {
         }
         const blogs = await Blog.find(queryBy).sort(sortQuery);
         const result = paginate(blogs, +page, +limit);
+        logger.info(result);
+        result.results = result.results.reverse();
 
         return res.status(200).json(result);
       } catch (err) {

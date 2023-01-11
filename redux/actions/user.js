@@ -18,7 +18,7 @@ export const signupUser = (userData) => {
   return async (dispatch) => {
     try {
       const { data } = await axios.post(
-        'http://localhost:4040/api/auth/signup',
+        `https://blog-api-project-v2.onrender.com/api/auth/signup`,
         userData
       );
       dispatch(signupActionCreator(data));
@@ -32,7 +32,7 @@ export const loginUser = (userData) => {
   return async (dispatch) => {
     try {
       const { data } = await axios.post(
-        'http://localhost:4040/api/auth/login',
+        `https://blog-api-project-v2.onrender.com/api/auth/login`,
         userData
       );
       console.log('Login User Action: ', data);

@@ -25,7 +25,9 @@ const getSingleBlogActionCreator = (payload) => {
 
 export const getAllBlogs = () => async (dispatch) => {
   try {
-    const { data } = await axios.get('http://localhost:4040/api/blogs');
+    const { data } = await axios.get(
+      `https://blog-api-project-v2.onrender.com/api/blogs`
+    );
     dispatch(getAllBlogsActionCreator(data.results));
   } catch (err) {
     console.log(err);
@@ -36,7 +38,7 @@ export const postABlog = (blogDetails, token) => {
   return async (dispatch) => {
     try {
       const { data } = await axios.post(
-        `http://localhost:4040/api/blogs/?blog_token=${token}`,
+        `https://blog-api-project-v2.onrender.com/api/blogs/?blog_token=${token}`,
         blogDetails
       );
       dispatch(postABlogActionCreator(data));
@@ -50,7 +52,7 @@ export const getSingleBlog = (blogId) => {
   return async (dispatch) => {
     try {
       const { data } = await axios.get(
-        `http://localhost:4040/api/blogs/${blogId}`
+        `https://blog-api-project-v2.onrender.com/api/blogs/${blogId}`
       );
       dispatch(getSingleBlogActionCreator(data));
     } catch (err) {

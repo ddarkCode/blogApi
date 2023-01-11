@@ -24,7 +24,6 @@ function Blogs() {
               <span>{blog.author}</span>
             </div>
             <p>{blog.description}</p>
-            {/* <p>{blog.body.substr(0, 400)}</p> */}
 
             <Link to={`/pages/blogs/${blog._id}`}>Read More...</Link>
           </li>

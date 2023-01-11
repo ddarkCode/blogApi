@@ -6,6 +6,7 @@ import session from 'express-session';
 import rateLimit from 'express-rate-limit';
 import React from 'react';
 import { matchRoutes } from 'react-router-config';
+import cors from 'cors';
 
 import envConfig from './config';
 import database from './database';
@@ -27,6 +28,7 @@ database(envConfig.mongoUrl);
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static('public'));
+app.use(cors());
 
 app.use(httpLogger);
 app.use(
@@ -88,6 +90,8 @@ app.get('*', (req, res) => {
   });
 });
 
-export default app.listen(envConfig.port, () =>
-  logger.info('Server is Running on port ' + envConfig.port)
+export default app.listen(envConfig.port, envConfig.host, () =>
+  logger.info(
+    `Server is Running on host: ${envConfig.host} and on port: ${envConfig.port}`
+  )
 );

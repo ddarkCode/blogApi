@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router';
 
 import { postABlog } from '../redux/actions/blogs';
 import checkIfLoggedIn from './common/RequireAuth';
 
 const NewBlog = (props) => {
   const dispatch = useDispatch();
-  //   const { user } = useSelector((state) => state);
+  const history = useHistory();
 
   const [newBlog, setNewBlog] = useState({
     title: '',
@@ -36,6 +37,7 @@ const NewBlog = (props) => {
       body: '',
       author: '',
     });
+    history.push('/pages/blogs');
   };
   return (
     <div id="newblog-main">

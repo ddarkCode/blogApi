@@ -1702,3 +1702,7 @@
 {"level":"info","message":"Server is Running on host: localhost and on port: 4040"}
 {"level":"info","message":"  Database connection was successfully established"}
 {"level":"info","message":"Server is Running on host: localhost and on port: 4040"}
+{"level":"info","message":"Server is Running on host: localhost and on port: 4040"}
+{"level":"info","message":"  Database connection was successfully established"}
+{"blog":{},"blogs":[],"level":"info","message":"Server Root App Store Get State: ","user":{}}
+{"contentLength":"843","level":"info","message":"HTTP Access Log","method":"GET","responseTime":79.842,"status":200,"timestamp":"Wed Jan 11 2023 08:34:35 GMT+0100 (West Africa Standard Time)","url":"/pages/blogs"}

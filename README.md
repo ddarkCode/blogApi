@@ -44,7 +44,7 @@ This is an api for a Blog app
 
 ## Base URL
 
-- https://blog-api-app76.herokuapp.com/
+https://blog-api-project-v2.onrender.com/
 
 ## Models
 
